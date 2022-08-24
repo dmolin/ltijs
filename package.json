@@ -1,5 +1,5 @@
 {
-  "name": "ltijs",
+  "name": "@hubroeducation/ltijs",
   "version": "5.9.0",
   "description": "Easily turn your web application into a LTI 1.3 Learning Tool.",
   "main": "index.js",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Cvmcosta/ltijs.git"
+    "url": "git+https://github.com/dmolin/ltijs.git"
   },
   "keywords": [
     "lti",
@@ -25,11 +25,10 @@
     "advantage"
   ],
   "author": "cvmcosta",
+  "contributors": [
+    "Davide Molin <davide@davidemolin.com> (https://davidemolin.com)"
+  ],
   "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/Cvmcosta/ltijs/issues"
-  },
-  "homepage": "https://cvmcosta.github.io/ltijs",
   "dependencies": {
     "@babel/runtime": "^7.15.4",
     "body-parser": "^1.19.0",
@@ -71,5 +70,13 @@
     "env": [
       "mocha"
     ]
+  },
+  "bugs": {
+    "url": "https://github.com/dmolin/ltijs/issues"
+  },
+  "homepage": "https://github.com/dmolin/ltijs#readme",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
   }
 }

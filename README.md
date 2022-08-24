@@ -1,3 +1,10 @@
+## @hubroeducation/ltijs Fork
+
+This is a fork of the original LTIJS@5.8.9 from <a href="https://github.com/Cvmcosta/ltijs">Cvcosta</a>.
+The main difference is a patch that makes *serverless* mode properly work when your LTIJS Express server is mounted in a dedicated subpath of your existing Web application (like: "/ltitool"). This is currently not working in the main LTIJS repository
+
+This fork allows you to specify the path your LTIJS serverless installation is attached on, so the library will always be able to reference the correct complete URL in case of redirects.
+
 <div align="center">
 	<br>
 	<br>
@@ -9,45 +16,11 @@
 
 > Easily turn your web application into a LTI® 1.3 Learning Tool.
 
-[![travisci](https://travis-ci.org/Cvmcosta/ltijs.svg?branch=master)](https://travis-ci.org/Cvmcosta/ltijs)
-[![codecov](https://codecov.io/gh/Cvmcosta/ltijs/branch/master/graph/badge.svg)](https://codecov.io/gh/Cvmcosta/ltijs)
-[![Node Version](https://img.shields.io/node/v/ltijs.svg)](https://www.npmjs.com/package/ltijs)
-[![NPM package](https://img.shields.io/npm/v/ltijs.svg)](https://www.npmjs.com/package/ltijs)
-[![NPM downloads](https://img.shields.io/npm/dm/ltijs)](https://www.npmjs.com/package/ltijs)
-[![dependencies Status](https://david-dm.org/cvmcosta/ltijs/status.svg)](https://david-dm.org/cvmcosta/ltijs)
-[![devDependencies Status](https://david-dm.org/cvmcosta/ltijs/dev-status.svg)](https://david-dm.org/cvmcosta/ltijs?type=dev)
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-[![APACHE2 License](https://img.shields.io/github/license/cvmcosta/ltijs)](#license)
-[![Donate](https://img.shields.io/badge/Donate-Buy%20me%20a%20coffe-blue)](https://www.buymeacoffee.com/UL5fBsi)
-
-
-Please ⭐️ us on [GitHub](https://github.com/Cvmcosta/ltijs), it always helps!
-> [Ltijs is LTI® Advantage Complete Certified by IMS](https://site.imsglobal.org/certifications/coursekey/ltijs)
-
 > Ltijs is the first LTI Library to implement the new [LTI® Advantage Dynamic Registration Service](https://cvmcosta.me/ltijs/#/dynamicregistration), now supported by **Moodle 3.10**. 
 > The Dynamic Registration Service turns the LTI Tool registration flow into a fast, completely automatic process.
 
 > - [Migrating from version 4](https://cvmcosta.github.io/ltijs/#/migration)
 > - [CHANGELOG](https://cvmcosta.github.io/ltijs/#/changelog)
-
----
-
-<div align="center">
-	<a href="https://ltiaas.com"><img width="330" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/docs/ltiaas.svg"></img></a>
-  <br>
-  <br>
-</div>
-
-> A ready-to-go SaaS LTI solution.
-
-If you need an enterprise-ready LTI deployment, LTIaaS can get you up and running in a matter of minutes. We offer a SaaS solution with a powerful, easy to use, API that gives you access to the entire functionality of the LTI protocol. And you only start paying once your product starts to grow.
-
-Through our consultation services we can help you design, build and maintain your LTI tool. The LTIaaS API is already being used to reach thousands of students across the entire world!
-
-> For more information visit [LTIaaS.com](https://ltiaas.com)
-> - [API Documentation](https://ltiaas.com/docs/)
-> - [Pricing information and simulator](https://ltiaas.com/pricing/)
-> - [Contact us](https://ltiaas.com/contact-us/)
 
 ---
 
@@ -202,45 +175,16 @@ Additional documentation:
 
 ## Contributing
 
-Please ⭐️ us on [GitHub](https://github.com/Cvmcosta/ltijs), it always helps!
+If you feel like it, you can donate any amount through paypal to the original author (<a href="https://github.com/Cvmcosta/ltijs">Cvcosta</a>) with a button below, it helps a lot.
 
-If you find a bug or think that something is hard to understand feel free to open an issue or contact me on twitter [@cvmcosta](https://twitter.com/cvmcosta), pull requests are also welcome :)
-
-
-And if you feel like it, you can donate any amount through paypal, it helps a lot.
-
-<a href="https://www.buymeacoffee.com/UL5fBsi" target="_blank"><img width="217" src="https://cdn.buymeacoffee.com/buttons/lato-green.png" alt="Buy Me A Coffee"></a>
+<a href="https://www.buymeacoffee.com/UL5fBsi" target="_blank"><img width="217" src="https://cdn.buymeacoffee.com/buttons/lato-green.png" alt="Buy Cvcosta A Coffee"></a>
 
 
 ---
 
 ## Special thanks
 
-<div align="center">
-	<a href="https://portais.ufma.br/PortalUfma/" target='_blank'><img width="150" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/docs/ufma-logo.png"></img></a>
-  <a href="https://www.unasus.ufma.br/" target='_blank'><img width="350" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/docs/unasus-logo.png"></img></a>
-</div>
-
-> I would like to thank the Federal University of Maranhão and UNA-SUS/UFMA for the support throughout the entire development process.
-
-
-
-
-<div align="center">
-<br>
-	<a href="https://coursekey.com/" target='_blank'><img width="180" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/docs/coursekey-logo.png"></img></a>
-</div>
-
-> I would like to thank CourseKey for making the Certification process possible and allowing me to be an IMS Member through them, which will contribute immensely to the future of the project.
-
-
-
-<div align="center">
-<br>
-	<a href="https://www.examind.io/" target='_blank'><img width="280" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/docs/examind-logo.png"></img></a>
-</div>
-
-> I would like to thank Examind for the amazing work on the Firestore database plugin. As well as the continuous help and support in the development of this project.
+> A great THANK YOU to <a href="https://github.com/Cvmcosta/ltijs">Cvcosta</a> for the original implementation, that saved us a TONS of time/work in our project.
 
 
 ---

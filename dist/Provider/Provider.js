@@ -75,6 +75,8 @@ var _cookieOptions = /*#__PURE__*/new WeakMap();
 
 var _setup = /*#__PURE__*/new WeakMap();
 
+var _path = /*#__PURE__*/new WeakMap();
+
 var _connectCallback2 = /*#__PURE__*/new WeakMap();
 
 var _deepLinkingCallback2 = /*#__PURE__*/new WeakMap();
@@ -152,6 +154,11 @@ class Provider {
     _setup.set(this, {
       writable: true,
       value: false
+    });
+
+    _path.set(this, {
+      writable: true,
+      value: ''
     });
 
     _connectCallback2.set(this, {
@@ -507,7 +514,8 @@ class Provider {
             query.append('ltik', newLtik);
             const urlSearchParams = query.toString();
             provMainDebug('Redirecting to endpoint with ltik');
-            return res.redirect(req.baseUrl + req.path + '?' + urlSearchParams);
+            provMainDebug("Redirect to:" + req.baseUrl + ((0, _classPrivateFieldGet2.default)(this, _path) || "") + req.path + '?' + urlSearchParams);
+            return res.redirect(req.baseUrl + ((0, _classPrivateFieldGet2.default)(this, _path) || "") + req.path + '?' + urlSearchParams);
           } else {
             const state = req.body.state;
 
@@ -773,11 +781,18 @@ class Provider {
         silent: false
       };
       if (options && options.port) conf.port = options.port;
-      if (options && options.silent) conf.silent = options.silent; // Starts server on given port
+      if (options && options.silent) conf.silent = options.silent; // if the serverless Express is assigned to a sub-path in your WebServer, provide its path in the options.path. This will make it possible to redirect correctly to the tool provider
+
+      if (options && options.path) (0, _classPrivateFieldSet2.default)(this, _path, options.path); // Starts server on given port
 
       if (options && options.serverless) {
         if (!conf.silent) {
           console.log('Ltijs started in serverless mode...');
+
+          if (!conf.silent) {
+            const message = `LTI Provider will handle requests on the current server endpoints` + `\n >App Route: ${(0, _classPrivateFieldGet2.default)(this, _path)}${(0, _classPrivateFieldGet2.default)(this, _appRoute)}` + `\n >Initiate Login Route: ${(0, _classPrivateFieldGet2.default)(this, _path)}${(0, _classPrivateFieldGet2.default)(this, _loginRoute)}` + `\n >Keyset Route: ${(0, _classPrivateFieldGet2.default)(this, _path)}${(0, _classPrivateFieldGet2.default)(this, _keysetRoute)}` + `\n >Dynamic Registration Route: ${(0, _classPrivateFieldGet2.default)(this, _path)}${(0, _classPrivateFieldGet2.default)(this, _dynRegRoute)}`;
+            console.log('  _   _______ _____      _  _____\n' + ' | | |__   __|_   _|    | |/ ____|\n' + ' | |    | |    | |      | | (___  \n' + ' | |    | |    | |  _   | |\\___ \\ \n' + ' | |____| |   _| |_| |__| |____) |\n' + ' |______|_|  |_____|\\____/|_____/ \n\n', message);
+          }
         }
       } else {
         await (0, _classPrivateFieldGet2.default)(this, _server).listen(conf.port);
