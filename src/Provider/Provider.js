@@ -575,12 +575,13 @@ class Provider {
 
       if (options && options.port) conf.port = options.port
       if (options && options.silent) conf.silent = options.silent
-      // if the serverless Express is assigned to a sub-path in your WebServer, provide its path in the options.path. This will make it possible to redirect correctly to the tool provider
-      if (options && options.path) this.#path = options.path;
 
       // Starts server on given port
 
       if (options && options.serverless) {
+        // if the serverless Express is assigned to a sub-path in your WebServer, provide its path in the options.path. This will make it possible to redirect correctly to the tool provider
+        if (options && options.path) this.#path = options.path;
+
         if (!conf.silent) {
           console.log('Ltijs started in serverless mode...')
           if (!conf.silent) {
