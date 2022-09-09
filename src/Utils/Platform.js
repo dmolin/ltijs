@@ -1,6 +1,7 @@
 
 // Utis
 const Auth = require('./Auth')
+const Keyset = require('./Keyset')
 const provPlatformDebug = require('debug')('provider:platform')
 
 /**
@@ -121,6 +122,14 @@ class Platform {
   async platformPrivateKey () {
     const key = await this.#Database.Get(this.#ENCRYPTIONKEY, 'privatekey', { kid: this.#kid })
     return key[0].key
+  }
+
+  /**
+   * @description Return the platform public key as a JSON object. useful when doing manual registrations with LMSes
+   */
+  async platformJSONConfig () {
+    const keysets = await Keyset.build(this.#Database, this.#ENCRYPTIONKEY);
+    return keysets?.keys?.find(ks => ks.kid === this.#kid);
   }
 
   /**

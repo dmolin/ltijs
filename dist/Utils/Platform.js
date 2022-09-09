@@ -9,6 +9,8 @@ var _classPrivateFieldSet2 = _interopRequireDefault(require("@babel/runtime/help
 // Utis
 const Auth = require('./Auth');
 
+const Keyset = require('./Keyset');
+
 const provPlatformDebug = require('debug')('provider:platform');
 /**
  * @description Class representing a registered platform.
@@ -204,6 +206,13 @@ class Platform {
       kid: (0, _classPrivateFieldGet2.default)(this, _kid)
     });
     return key[0].key;
+  }
+
+  async platformJSONConfig() {
+    var _keysets$keys;
+
+    const keysets = await Keyset.build((0, _classPrivateFieldGet2.default)(this, _Database), (0, _classPrivateFieldGet2.default)(this, _ENCRYPTIONKEY2));
+    return keysets === null || keysets === void 0 ? void 0 : (_keysets$keys = keysets.keys) === null || _keysets$keys === void 0 ? void 0 : _keysets$keys.find(ks => ks.kid === (0, _classPrivateFieldGet2.default)(this, _kid));
   }
   /**
      * @description Sets/Gets the platform authorization configurations used to validate it's messages.

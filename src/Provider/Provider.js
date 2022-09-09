@@ -1100,6 +1100,7 @@ class Provider {
     console.log('Deprecation warning: The keysetUrl() method is now deprecated and will be removed in the 6.0 release. Use keysetRoute() instead.')
     return this.keysetRoute()
   }
+
 }
 
 module.exports = new Provider()
