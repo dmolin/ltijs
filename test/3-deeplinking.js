@@ -180,7 +180,7 @@ describe('Testing Deep Linking Service', function () {
 
     return chai.request(lti.app).post(url).type('json').send({ id_token: payload, state: state }).set('Cookie', ['state' + state + '=s%3Ahttp%3A%2F%2Flocalhost%2Fmoodle.fsJogjTuxtbJwvJcuG4esveQAlih67sfEltuwRM6MX0; Path=/; HttpOnly;', 'ltiaHR0cDovL2xvY2FsaG9zdC9tb29kbGVDbGllbnRJZDEy=s%3A2.ZezwPKtv3Uibp4A%2F6cN0UzbIQlhA%2BTAKvbtN%2FvgGaCI; Path=/; HttpOnly; SameSite=None']).then(async res => {
       expect(res).to.have.status(200)
-      const payload = jwt.verify(res.text, await plat.platformPublicKey())
+      const payload = jwt.verify(res.text, await plat.platformPublicKey(), { allowInsecureKeySizes: true })
       expect(payload['https://purl.imsglobal.org/spec/lti-dl/claim/content_items']).to.deep.include(item)
       expect(payload.iss).to.equal(await plat.platformClientId())
       expect(payload.aud).to.equal(await plat.platformUrl())
@@ -224,7 +224,7 @@ describe('Testing Deep Linking Service', function () {
       expect(res.text.includes('<form id="ltijs_submit" style="display: none;" action="https://ltiadvantagevalidator.imsglobal.org/ltitool/deeplinkresponse.html" method="POST"><input type="hidden" name="JWT"')).to.equal(true)
       expect(res.text.includes('<script>document.getElementById("ltijs_submit").submit()</script>')).to.equal(true)
       const _payload = res.text.split('<form id="ltijs_submit" style="display: none;" action="https://ltiadvantagevalidator.imsglobal.org/ltitool/deeplinkresponse.html" method="POST"><input type="hidden" name="JWT" value="')[1].split('" /></form><script>document.getElementById("ltijs_submit").submit()</script>')[0]
-      const payload = jwt.verify(_payload, await plat.platformPublicKey())
+      const payload = jwt.verify(_payload, await plat.platformPublicKey(), { allowInsecureKeySizes: true })
       expect(payload['https://purl.imsglobal.org/spec/lti-dl/claim/content_items']).to.deep.include(item)
       expect(payload.iss).to.equal(await plat.platformClientId())
       expect(payload.aud).to.equal(await plat.platformUrl())

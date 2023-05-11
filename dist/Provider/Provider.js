@@ -558,6 +558,7 @@ class Provider {
         let validLtik;
 
         try {
+          // it this fails with jasonwebtoken v9, check https://github.com/auth0/node-jsonwebtoken/wiki/Migration-Notes:-v8-to-v9
           validLtik = jwt.verify(ltik, (0, _classPrivateFieldGet2.default)(this, _ENCRYPTIONKEY2));
         } catch (err) {
           if ((0, _classPrivateFieldGet2.default)(this, _whitelistedRoutes).find(r => {

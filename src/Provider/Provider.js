@@ -385,6 +385,7 @@ class Provider {
         provMainDebug('Ltik found')
         let validLtik
         try {
+          // it this fails with jasonwebtoken v9, check https://github.com/auth0/node-jsonwebtoken/wiki/Migration-Notes:-v8-to-v9
           validLtik = jwt.verify(ltik, this.#ENCRYPTIONKEY)
         } catch (err) {
           if (this.#whitelistedRoutes.find(r => {

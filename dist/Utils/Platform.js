@@ -207,6 +207,10 @@ class Platform {
     });
     return key[0].key;
   }
+  /**
+   * @description Return the platform public key as a JSON object. useful when doing manual registrations with LMSes
+   */
+
 
   async platformJSONConfig() {
     var _keysets$keys;
