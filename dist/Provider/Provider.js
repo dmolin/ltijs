@@ -41,9 +41,10 @@ const url = require('fast-url-parser');
 
 const jwt = require('jsonwebtoken');
 
-const crypto = require('crypto');
+const crypto = require('crypto'); // const provAuthDebug = require('debug')('provider:auth')
 
-const provAuthDebug = require('debug')('provider:auth');
+
+const provAuthDebug = require('debug')('provider:main');
 
 const provMainDebug = require('debug')('provider:main');
 
@@ -379,7 +380,7 @@ class Provider {
       provMainDebug('Receiving request at path: ' + req.baseUrl + req.path); // Ckeck if request is attempting to initiate oidc login flow or access reserved routes
 
       if (req.path === (0, _classPrivateFieldGet2.default)(this, _loginRoute) || req.path === (0, _classPrivateFieldGet2.default)(this, _keysetRoute) || req.path === (0, _classPrivateFieldGet2.default)(this, _dynRegRoute)) return next();
-      provMainDebug('Path does not match reserved endpoints');
+      provMainDebug(`Path does not match reserved endpoints [${(0, _classPrivateFieldGet2.default)(this, _loginRoute)}, ${(0, _classPrivateFieldGet2.default)(this, _keysetRoute)}, ${(0, _classPrivateFieldGet2.default)(this, _dynRegRoute)}]`);
 
       try {
         // Retrieving ltik token
@@ -520,7 +521,7 @@ class Provider {
             const state = req.body.state;
 
             if (state) {
-              provMainDebug('Deleting state cookie and Database entry');
+              provMainDebug('Deleting state cookie and Database entry (1)');
               const savedState = await this.Database.Get(false, 'state', {
                 state: state
               });
@@ -634,7 +635,7 @@ class Provider {
         const state = req.body.state;
 
         if (state) {
-          provMainDebug('Deleting state cookie and Database entry');
+          provMainDebug('Deleting state cookie and Database entry (2)');
           const savedState = await this.Database.Get(false, 'state', {
             state: state
           });
@@ -721,6 +722,7 @@ class Provider {
           const query = await Request.ltiAdvantageLogin(params, platform, state);
           provMainDebug('Login request: ');
           provMainDebug(query);
+          provMainDebug(`redirecting to ${await platform.platformAuthEndpoint()}`);
           res.redirect(url.format({
             pathname: await platform.platformAuthEndpoint(),
             query: query

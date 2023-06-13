@@ -100,7 +100,7 @@ class Auth {
       }
     } else if (validationParameters.iss !== decoded.payload.iss) throw new Error('ISS_CLAIM_DOES_NOT_MATCH');
 
-    provAuthDebug('Attempting to retrieve registered platform');
+    provAuthDebug('Attempting to retrieve registered platform. decoded header' + JSON.stringify(decoded.header));
     let platform;
     if (!Array.isArray(decoded.payload.aud)) platform = await getPlatform(decoded.payload.iss, decoded.payload.aud, ENCRYPTIONKEY, Database);else {
       for (const aud of decoded.payload.aud) {
@@ -117,15 +117,31 @@ class Auth {
     switch (authConfig.method) {
       case 'JWK_SET':
         {
-          provAuthDebug('Retrieving key from jwk_set');
+          var _res;
+
+          provAuthDebug('Retrieving key from jwk_set (1). kid=' + kid);
           if (!kid) throw new Error('KID_NOT_FOUND');
           const keysEndpoint = authConfig.key;
-          const res = await got.get(keysEndpoint).json();
-          const keyset = res.keys;
+          provAuthDebug(`keysEndpoint: ${keysEndpoint}`);
+          let res;
+
+          try {
+            var _got$get;
+
+            res = await ((_got$get = got.get(keysEndpoint)) === null || _got$get === void 0 ? void 0 : _got$get.json());
+          } catch (err) {
+            provAuthDebug(`Error retrieving keyset: ${err}`);
+            throw new Error('KEYSET_NOT_FOUND');
+          }
+
+          provAuthDebug(`keysEndpoint (done): ${JSON.stringify(res)}`);
+          const keyset = (_res = res) === null || _res === void 0 ? void 0 : _res.keys;
+          provAuthDebug(`Retrieved keyset: ${JSON.stringify(keyset)}`);
           if (!keyset) throw new Error('KEYSET_NOT_FOUND');
           const jwk = keyset.find(key => {
             return key.kid === kid;
           });
+          provAuthDebug(`Retrieved key: ${JSON.stringify(jwk)}`);
           if (!jwk) throw new Error('KEY_NOT_FOUND');
           provAuthDebug('Converting JWK key to PEM key');
           const key = await Jwk.export({
@@ -137,7 +153,7 @@ class Auth {
 
       case 'JWK_KEY':
         {
-          provAuthDebug('Retrieving key from jwk_key');
+          provAuthDebug('Retrieving key from jwk_key (2)');
           if (!authConfig.key) throw new Error('KEY_NOT_FOUND');
           provAuthDebug('Converting JWK key to PEM key');
           let jwk = authConfig.key;
@@ -151,7 +167,7 @@ class Auth {
 
       case 'RSA_KEY':
         {
-          provAuthDebug('Retrieving key from rsa_key');
+          provAuthDebug('Retrieving key from rsa_key (3)');
           const key = authConfig.key;
           if (!key) throw new Error('KEY_NOT_FOUND');
           const verified = await this.verifyToken(token, key, validationParameters, platform, Database);

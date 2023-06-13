@@ -19,7 +19,8 @@ const url = require('fast-url-parser')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 
-const provAuthDebug = require('debug')('provider:auth')
+// const provAuthDebug = require('debug')('provider:auth')
+const provAuthDebug = require('debug')('provider:main')
 const provMainDebug = require('debug')('provider:main')
 const provDynamicRegistrationDebug = require('debug')('provider:dynamicRegistrationService')
 
@@ -210,11 +211,11 @@ class Provider {
 
     // Registers main athentication and routing middleware
     const sessionValidator = async (req, res, next) => {
-      provMainDebug('Receiving request at path: ' + req.baseUrl + req.path)
+      provMainDebug('Receiving request at path: ' + req.baseUrl + req.path);
       // Ckeck if request is attempting to initiate oidc login flow or access reserved routes
       if (req.path === this.#loginRoute || req.path === this.#keysetRoute || req.path === this.#dynRegRoute) return next()
 
-      provMainDebug('Path does not match reserved endpoints')
+      provMainDebug(`Path does not match reserved endpoints [${this.#loginRoute}, ${this.#keysetRoute}, ${this.#dynRegRoute}]`);
 
       try {
         // Retrieving ltik token
@@ -353,7 +354,7 @@ class Provider {
           } else {
             const state = req.body.state
             if (state) {
-              provMainDebug('Deleting state cookie and Database entry')
+              provMainDebug('Deleting state cookie and Database entry (1)')
               const savedState = await this.Database.Get(false, 'state', { state: state })
               res.clearCookie('state' + state, this.#cookieOptions)
               if (savedState) this.Database.Delete('state', { state: state })
@@ -452,7 +453,7 @@ class Provider {
       } catch (err) {
         const state = req.body.state
         if (state) {
-          provMainDebug('Deleting state cookie and Database entry')
+          provMainDebug('Deleting state cookie and Database entry (2)')
           const savedState = await this.Database.Get(false, 'state', { state: state })
           res.clearCookie('state' + state, this.#cookieOptions)
           if (savedState) this.Database.Delete('state', { state: state })
@@ -522,6 +523,7 @@ class Provider {
           const query = await Request.ltiAdvantageLogin(params, platform, state)
           provMainDebug('Login request: ')
           provMainDebug(query)
+          provMainDebug(`redirecting to ${await platform.platformAuthEndpoint()}`);
           res.redirect(url.format({
             pathname: await platform.platformAuthEndpoint(),
             query: query

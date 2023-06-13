@@ -45,6 +45,7 @@ class Database {
       writable: true,
       value: {
         useNewUrlParser: true,
+        // TODO:CODE: keep this until work on https://jira.mongodb.org/browse/NODE-5190 is completed
         keepAlive: true,
         keepAliveInitialDelay: 300000,
         connectTimeoutMS: 300000,
