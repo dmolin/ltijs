@@ -84,6 +84,7 @@ class Provider {
   }
 
   #unregisteredPlatformCallback = async (req, res) => {
+    provMainDebug(`Unregistered platform attempting connection: ${JSON.stringify(req.body)}`);
     return res.status(400).send({ status: 400, error: 'Bad Request', details: { message: 'UNREGISTERED_PLATFORM' } })
   }
 
