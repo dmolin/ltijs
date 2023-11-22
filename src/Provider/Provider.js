@@ -18,6 +18,7 @@ const DynamicRegistration = require('./Services/DynamicRegistration')
 const url = require('fast-url-parser')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
+const { setupCustomLogger } = require('../Utils/Logger')
 
 // const provAuthDebug = require('debug')('provider:auth')
 const provAuthDebug = require('debug')('provider:main')
@@ -141,13 +142,24 @@ class Provider {
      * @param {Array<String>} [options.dynReg.redirectUris] - Additional redirect URIs. (Ex: ['https://tool.example.com/launch'])
      * @param {Object} [options.dynReg.customParameters] - Custom parameters object. (Ex: { key: 'value' })
      * @param {Boolean} [options.dynReg.autoActivate = false] - Platform auto activation flag. If true, every Platform registered dynamically is immediately activated. Defaults to false.
+     * @param {Object} [logger] optional logger object
+     * @param {Function} [logger.info] logger info function
+     * @param {Function} [logger.warn] logger debug function
+     * @param {Function} [logger.error] logger error function
      */
-  setup (encryptionkey, database, options) {
+  setup (encryptionkey, database, options, logger) {
     if (this.#setup) throw new Error('PROVIDER_ALREADY_SETUP')
     if (options && options.https && (!options.ssl || !options.ssl.key || !options.ssl.cert)) throw new Error('MISSING_SSL_KEY_CERTIFICATE')
     if (!encryptionkey) throw new Error('MISSING_ENCRYPTION_KEY')
     if (!database) throw new Error('MISSING_DATABASE_CONFIGURATION')
     if (options && options.dynReg && (!options.dynReg.url || !options.dynReg.name)) throw new Error('MISSING_DYNREG_CONFIGURATION')
+
+    logger.info('LTI Provider setup');
+
+    if (logger) {
+      setupCustomLogger(logger);
+      logger.info('LTI Provider setup: setting custom logger');
+    }
 
     /**
      * @description Database object.
@@ -490,7 +502,7 @@ class Provider {
         if (!params.iss || !params.login_hint || !params.target_link_uri) return res.status(400).send({ status: 400, error: 'Bad Request', details: { message: 'MISSING_LOGIN_PARAMETERS' } })
         const iss = params.iss
         const clientId = params.client_id
-        provMainDebug('Receiving a login request from: ' + iss + ', clientId: ' + clientId)
+        logger.info('Provider: Receiving a login request from: ' + iss + ', clientId: ' + clientId);
         let platform
         if (clientId) platform = await this.getPlatform(iss, clientId)
         else platform = (await this.getPlatform(iss))[0]
@@ -503,7 +515,7 @@ class Provider {
           // Create state parameter used to validade authentication response
           let state = encodeURIComponent(crypto.randomBytes(25).toString('hex'))
 
-          provMainDebug('Target Link URI: ', params.target_link_uri)
+          logger.info('Provider: Target Link URI: ', params.target_link_uri)
           /* istanbul ignore next */
           // Cleaning up target link uri and retrieving query parameters
           if (params.target_link_uri.includes('?')) {

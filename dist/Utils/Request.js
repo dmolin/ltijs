@@ -25,7 +25,5 @@ class Request {
     if (request.lti_deployment_id) query.lti_deployment_id = request.lti_deployment_id;
     return query;
   }
-
 }
-
 module.exports = Request;
