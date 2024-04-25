@@ -16,5 +16,4 @@ function setupCustomLogger(logger) {
     Object.assign(Logger, logger);
   }
 }
-var _default = Logger;
-exports.default = _default;
+var _default = exports.default = Logger;
