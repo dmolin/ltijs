@@ -2,10 +2,13 @@
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
-var _classPrivateFieldGet2 = _interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldGet"));
-var _classPrivateFieldSet2 = _interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldSet"));
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { (0, _defineProperty2.default)(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
+function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
+function _classPrivateFieldGet(s, a) { return s.get(_assertClassBrand(s, a)); }
+function _classPrivateFieldSet(s, a, r) { return s.set(_assertClassBrand(s, a), r), r; }
+function _assertClassBrand(e, t, n) { if ("function" == typeof e ? e === t : e.has(t)) return arguments.length < 3 ? t : n; throw new TypeError("Private element is not present on this object"); }
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const crypto = require('crypto');
@@ -23,31 +26,22 @@ class Database {
    * @param {Object} database - Configuration object
    */
   constructor(database) {
-    _dbUrl.set(this, {
-      writable: true,
-      value: void 0
+    _classPrivateFieldInitSpec(this, _dbUrl, void 0);
+    _classPrivateFieldInitSpec(this, _dbConnection, {
+      useNewUrlParser: true,
+      // TODO:CODE: keep this until work on https://jira.mongodb.org/browse/NODE-5190 is completed
+      // keepAlive: true,
+      // keepAliveInitialDelay: 300000,
+      connectTimeoutMS: 300000,
+      useUnifiedTopology: true
     });
-    _dbConnection.set(this, {
-      writable: true,
-      value: {
-        useNewUrlParser: true,
-        // TODO:CODE: keep this until work on https://jira.mongodb.org/browse/NODE-5190 is completed
-        keepAlive: true,
-        keepAliveInitialDelay: 300000,
-        connectTimeoutMS: 300000,
-        useUnifiedTopology: true
-      }
-    });
-    _deploy.set(this, {
-      writable: true,
-      value: false
-    });
+    _classPrivateFieldInitSpec(this, _deploy, false);
     if (!database || !database.url) throw new Error('MISSING_DATABASE_CONFIG');
 
     // Configures database connection
-    (0, _classPrivateFieldSet2.default)(this, _dbUrl, database.url);
+    _classPrivateFieldSet(_dbUrl, this, database.url);
     if (database.debug) mongoose.set('debug', true);
-    (0, _classPrivateFieldSet2.default)(this, _dbConnection, _objectSpread(_objectSpread({}, (0, _classPrivateFieldGet2.default)(this, _dbConnection)), database.connection));
+    _classPrivateFieldSet(_dbConnection, this, _objectSpread(_objectSpread({}, _classPrivateFieldGet(_dbConnection, this)), database.connection));
 
     // Creating database schemas
     const idTokenSchema = new Schema({
@@ -229,15 +223,15 @@ class Database {
       setTimeout(async () => {
         if (this.db.readyState === 0) {
           try {
-            await mongoose.connect((0, _classPrivateFieldGet2.default)(this, _dbUrl), (0, _classPrivateFieldGet2.default)(this, _dbConnection));
+            await mongoose.connect(_classPrivateFieldGet(_dbUrl, this), _classPrivateFieldGet(_dbConnection, this));
           } catch (err) {
             provDatabaseDebug('Error in MongoDb connection: ' + err);
           }
         }
       }, 1000);
     });
-    if (this.db.readyState === 0) await mongoose.connect((0, _classPrivateFieldGet2.default)(this, _dbUrl), (0, _classPrivateFieldGet2.default)(this, _dbConnection));
-    (0, _classPrivateFieldSet2.default)(this, _deploy, true);
+    if (this.db.readyState === 0) await mongoose.connect(_classPrivateFieldGet(_dbUrl, this), _classPrivateFieldGet(_dbConnection, this));
+    _classPrivateFieldSet(_deploy, this, true);
     return true;
   }
 
@@ -245,7 +239,7 @@ class Database {
   async Close() {
     mongoose.connection.removeAllListeners();
     await mongoose.connection.close();
-    (0, _classPrivateFieldSet2.default)(this, _deploy, false);
+    _classPrivateFieldSet(_deploy, this, false);
     return true;
   }
 
@@ -256,7 +250,7 @@ class Database {
      * @param {Object} [query] - Query for the item you are looking for in the format {type: "type1"}.
      */
   async Get(ENCRYPTIONKEY, collection, query) {
-    if (!(0, _classPrivateFieldGet2.default)(this, _deploy)) throw new Error('PROVIDER_NOT_DEPLOYED');
+    if (!_classPrivateFieldGet(_deploy, this)) throw new Error('PROVIDER_NOT_DEPLOYED');
     if (!collection) throw new Error('MISSING_COLLECTION');
     const Model = mongoose.model(collection);
     const result = await Model.find(query).select('-__v -_id');
@@ -282,7 +276,7 @@ class Database {
      * @param {Object} [index] - Key that should be used as index in case of Encrypted document.
      */
   async Insert(ENCRYPTIONKEY, collection, item, index) {
-    if (!(0, _classPrivateFieldGet2.default)(this, _deploy)) throw new Error('PROVIDER_NOT_DEPLOYED');
+    if (!_classPrivateFieldGet(_deploy, this)) throw new Error('PROVIDER_NOT_DEPLOYED');
     if (!collection || !item || ENCRYPTIONKEY && !index) throw new Error('MISSING_PARAMS');
     const Model = mongoose.model(collection);
     let newDocData = item;
@@ -307,7 +301,7 @@ class Database {
    * @param {Object} [index] - Key that should be used as index in case of Encrypted document.
    */
   async Replace(ENCRYPTIONKEY, collection, query, item, index) {
-    if (!(0, _classPrivateFieldGet2.default)(this, _deploy)) throw new Error('PROVIDER_NOT_DEPLOYED');
+    if (!_classPrivateFieldGet(_deploy, this)) throw new Error('PROVIDER_NOT_DEPLOYED');
     if (!collection || !item || ENCRYPTIONKEY && !index) throw new Error('MISSING_PARAMS');
     const Model = mongoose.model(collection);
     let newDocData = item;
@@ -332,7 +326,7 @@ class Database {
      * @param {Object} modification - The modification you want to make in the format {type: "type2"}.
      */
   async Modify(ENCRYPTIONKEY, collection, query, modification) {
-    if (!(0, _classPrivateFieldGet2.default)(this, _deploy)) throw new Error('PROVIDER_NOT_DEPLOYED');
+    if (!_classPrivateFieldGet(_deploy, this)) throw new Error('PROVIDER_NOT_DEPLOYED');
     if (!collection || !query || !modification) throw new Error('MISSING_PARAMS');
     const Model = mongoose.model(collection);
     let newMod = modification;
@@ -354,7 +348,7 @@ class Database {
      * @param {Object} query - The entry you want to delete in the format {type: "type1"}.
      */
   async Delete(collection, query) {
-    if (!(0, _classPrivateFieldGet2.default)(this, _deploy)) throw new Error('PROVIDER_NOT_DEPLOYED');
+    if (!_classPrivateFieldGet(_deploy, this)) throw new Error('PROVIDER_NOT_DEPLOYED');
     if (!collection || !query) throw new Error('MISSING_PARAMS');
     const Model = mongoose.model(collection);
     await Model.deleteMany(query);

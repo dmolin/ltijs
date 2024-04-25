@@ -608,7 +608,7 @@ class Provider {
         if (!conf.silent) {
           console.log('Ltijs started in serverless mode...')
           if (!conf.silent) {
-            const message = `LTI Provider will handle requests on the current server endpoints` +
+            const message = `LOCAL LTI Provider will handle requests on the current server endpoints` +
               `\n >App Route: ${this.#path}${this.#appRoute}` +
               `\n >Initiate Login Route: ${this.#path}${this.#loginRoute}` +
               `\n >Keyset Route: ${this.#path}${this.#keysetRoute}` +
@@ -626,7 +626,7 @@ class Provider {
         provMainDebug('Ltijs started listening on port: ', conf.port)
 
         // Startup message
-        const message = 'LTI Provider is listening on port ' + conf.port + '!\n\n LTI provider config: \n >App Route: ' + this.#appRoute + '\n >Initiate Login Route: ' + this.#loginRoute + '\n >Keyset Route: ' + this.#keysetRoute + '\n >Dynamic Registration Route: ' + this.#dynRegRoute
+        const message = 'LOCAL LTI Provider is listening on port ' + conf.port + '!\n\n LTI provider config: \n >App Route: ' + this.#appRoute + '\n >Initiate Login Route: ' + this.#loginRoute + '\n >Keyset Route: ' + this.#keysetRoute + '\n >Dynamic Registration Route: ' + this.#dynRegRoute
 
         if (!conf.silent) {
           console.log('  _   _______ _____      _  _____\n' +
