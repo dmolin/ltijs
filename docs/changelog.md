@@ -9,6 +9,11 @@
 
 ### CHANGELOG
 
+#### V5.9.6
+> 2024-04-25
+> - Update dependencies
+> - Added `useDeepLinking` option to dynamic registration configurations. Allowing tools to disable deep linking when registering with platforms.
+
 #### V5.7.5
 > 2021-05-13
 > - Fix authentication flow using JWK_SET.

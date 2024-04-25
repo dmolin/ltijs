@@ -8,7 +8,7 @@ const expect = chai.expect
 
 const lti = require('../dist/Provider/Provider')
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
 describe('Testing shutdown method', function () {
   this.timeout(10000)

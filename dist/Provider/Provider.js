@@ -255,6 +255,7 @@ class Provider {
      * @param {Array<String>} [options.dynReg.redirectUris] - Additional redirect URIs. (Ex: ['https://tool.example.com/launch'])
      * @param {Object} [options.dynReg.customParameters] - Custom parameters object. (Ex: { key: 'value' })
      * @param {Boolean} [options.dynReg.autoActivate = false] - Platform auto activation flag. If true, every Platform registered dynamically is immediately activated. Defaults to false.
+     * @param {Boolean} [options.dynReg.useDeepLinking = true] - Deep Linking usage flag. If true, sets up deep linking in the platform. Defaults to true.
      * @param {Object} [logger] optional logger object
      * @param {Function} [logger.info] logger info function
      * @param {Function} [logger.warn] logger debug function
