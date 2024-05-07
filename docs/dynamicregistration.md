@@ -1,5 +1,3 @@
-
-
 <div align="center">
 	<br>
 	<br>
@@ -7,9 +5,7 @@
   <a href="https://site.imsglobal.org/certifications/coursekey/ltijs"​ target='_blank'><img width="80" src="https://www.imsglobal.org/sites/default/files/IMSconformancelogoREG.png" alt="IMS Global Certified" border="0"></img></a>
 </div>
 
-
 > Dynamic Registration Service
-
 
 [![codecov](https://codecov.io/gh/Cvmcosta/ltijs/branch/master/graph/badge.svg)](https://codecov.io/gh/Cvmcosta/ltijs)
 [![Node Version](https://img.shields.io/node/v/ltijs.svg)](https://www.npmjs.com/package/ltijs)
@@ -28,25 +24,21 @@
 
 ---
 
-
 ## Introduction
 
-Ltijs is the first LTI library to implement the **Dynamic Registration Service**. 
+Ltijs is the first LTI library to implement the **Dynamic Registration Service**.
 
 Dynamic registration turns the LTI registration flow into a fast, completely automatic process. Ltijs exposes a registration endpoint through which Platforms can initiate the registration flow.
 
 Currently the following LMSs support Dynamic Registration:
 
 | **LMS** | **Version** |
-| ---- | ---|
-| Moodle | ^3.10 |
-
+| ------- | ----------- |
+| Moodle  | ^3.10       |
 
 ---
 
-
 ## Usage
-
 
 ### Setting up dynamic registration
 
@@ -66,51 +58,55 @@ Dynamic registration needs to be setup through the `Provider.setup` method with 
 
 **Example:**
 
-``` javascript
-// Require Provider 
-const lti = require('ltijs').Provider
+```javascript
+// Require Provider
+const lti = require("ltijs").Provider;
 
 // Setup provider
-lti.setup('LTIKEY', // Key used to sign cookies and tokens
-  { // Database configuration
-    url: 'mongodb://localhost/database',
-    connection: { user: 'user', pass: 'password' }
+lti.setup(
+  "LTIKEY", // Key used to sign cookies and tokens
+  {
+    // Database configuration
+    url: "mongodb://localhost/database",
+    connection: { user: "user", pass: "password" },
   },
-  { // Options
-    appRoute: '/', loginRoute: '/login', // Optionally, specify some of the reserved routes
+  {
+    // Options
+    appRoute: "/",
+    loginRoute: "/login", // Optionally, specify some of the reserved routes
     cookies: {
       secure: false, // Set secure to true if the testing platform is in a different domain and https is being used
-      sameSite: '' // Set sameSite to 'None' if the testing platform is in a different domain and https is being used
+      sameSite: "", // Set sameSite to 'None' if the testing platform is in a different domain and https is being used
     },
     devMode: true, // Set DevMode to false if running in a production environment with https
-    dynRegRoute: '/register', // Setting up dynamic registration route. Defaults to '/register'
+    dynRegRoute: "/register", // Setting up dynamic registration route. Defaults to '/register'
     dynReg: {
-      url: 'http://tool.example.com', // Tool Provider URL. Required field.
-      name: 'Tool Provider', // Tool Provider name. Required field.
-      logo: 'http://tool.example.com/assets/logo.svg', // Tool Provider logo URL.
-      description: 'Tool Description', // Tool Provider description.
-      redirectUris: ['http://tool.example.com/launch'], // Additional redirection URLs. The main URL is added by default.
-      customParameters: { key: 'value' }, // Custom parameters.
-      autoActivate: false // Whether or not dynamically registered Platforms should be automatically activated. Defaults to false.
-    }
-  }
-)
+      url: "http://tool.example.com", // Tool Provider URL. Required field.
+      name: "Tool Provider", // Tool Provider name. Required field.
+      logo: "http://tool.example.com/assets/logo.svg", // Tool Provider logo URL.
+      description: "Tool Description", // Tool Provider description.
+      redirectUris: ["http://tool.example.com/launch"], // Additional redirection URLs. The main URL is added by default.
+      customParameters: { key: "value" }, // Custom parameters.
+      autoActivate: false, // Whether or not dynamically registered Platforms should be automatically activated. Defaults to false.
+    },
+  },
+);
 ```
-
-
 
 ### Using the Dynamic Registration Service
 
-Dynamic Registration is used when a Platform makes a **registration request** to the Tool's **dynamic registration endpoint**, *`/register` by default*. Both parties will then exchange information and create the registrations.
+Dynamic Registration is used when a Platform makes a **registration request** to the Tool's **dynamic registration endpoint**, _`/register` by default_. Both parties will then exchange information and create the registrations.
 
 Platform registrations created dynamically, by default, have to be manually activated. This can be done by using the `Platform.platformActive` method:
 
-
 ```javascript
 // Retrieve Platform
-const platform = await lti.getPlatform('http://platform.example.com', 'CLIENTID')
+const platform = await lti.getPlatform(
+  "http://platform.example.com",
+  "CLIENTID",
+);
 // Activate Platform
-await platform.platformActive(true)
+await platform.platformActive(true);
 ```
 
 By setting the `options.dynReg.autoActivate` field to `true` in the `Provider.setup` method, dynamically registered Platforms can be automatically activated.
@@ -126,17 +122,88 @@ The following example is a representation of the default Dynamic Registration fl
 ```javascript
 lti.onDynamicRegistration(async (req, res, next) => {
   try {
-    if (!req.query.openid_configuration) return res.status(400).send({ status: 400, error: 'Bad Request', details: { message: 'Missing parameter: "openid_configuration".' } })
-    const message = await lti.DynamicRegistration.register(req.query.openid_configuration, req.query.registration_token)
-    res.setHeader('Content-type', 'text/html')
-    res.send(message)
+    if (!req.query.openid_configuration)
+      return res
+        .status(400)
+        .send({
+          status: 400,
+          error: "Bad Request",
+          details: { message: 'Missing parameter: "openid_configuration".' },
+        });
+    const message = await lti.DynamicRegistration.register(
+      req.query.openid_configuration,
+      req.query.registration_token,
+    );
+    res.setHeader("Content-type", "text/html");
+    res.send(message);
   } catch (err) {
-    if (err.message === 'PLATFORM_ALREADY_REGISTERED') return res.status(403).send({ status: 403, error: 'Forbidden', details: { message: 'Platform already registered.' } })
-    return res.status(500).send({ status: 500, error: 'Internal Server Error', details: { message: err.message } })
+    if (err.message === "PLATFORM_ALREADY_REGISTERED")
+      return res
+        .status(403)
+        .send({
+          status: 403,
+          error: "Forbidden",
+          details: { message: "Platform already registered." },
+        });
+    return res
+      .status(500)
+      .send({
+        status: 500,
+        error: "Internal Server Error",
+        details: { message: err.message },
+      });
   }
-})
+});
 ```
 
+You can also pass a third parameter to `lti.DynamicRegistration.register` containing overrides for the default dynamic registration options.
+
+The following example is a representation of the default Dynamic Registration flow with added custom parameters:
+
+```javascript
+lti.onDynamicRegistration(async (req, res, next) => {
+  try {
+    if (!req.query.openid_configuration)
+      return res
+        .status(400)
+        .send({
+          status: 400,
+          error: "Bad Request",
+          details: { message: 'Missing parameter: "openid_configuration".' },
+        });
+    const message = await lti.DynamicRegistration.register(
+      req.query.openid_configuration,
+      req.query.registration_token,
+      {
+        "https://purl.imsglobal.org/spec/lti-tool-configuration": {
+          custom_parameters: {
+            custom1: "value1",
+            custom2: "value2",
+          },
+        },
+      },
+    );
+    res.setHeader("Content-type", "text/html");
+    res.send(message);
+  } catch (err) {
+    if (err.message === "PLATFORM_ALREADY_REGISTERED")
+      return res
+        .status(403)
+        .send({
+          status: 403,
+          error: "Forbidden",
+          details: { message: "Platform already registered." },
+        });
+    return res
+      .status(500)
+      .send({
+        status: 500,
+        error: "Internal Server Error",
+        details: { message: err.message },
+      });
+  }
+});
+```
 
 ### Moodle LMS
 
@@ -154,8 +221,6 @@ Follow the steps bellow to use the Dynamic Registration Service with the Moodle 
   <div><sub>Dynamic Registration with Moodle</sub></div>
   </br>
 </div>
-
-
 
 ---
 
