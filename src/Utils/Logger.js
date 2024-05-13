@@ -1,12 +1,12 @@
-const provMainDebug = require('debug')('provider:main')
+const provMainDebug = require("debug")("provider:main");
 
-const Logger = {
+export const Logger = {
   info: provMainDebug,
   error: provMainDebug,
-  warn: provMainDebug
+  warn: provMainDebug,
 };
 
-export function setupCustomLogger (logger) {
+export function setupCustomLogger(logger) {
   if (logger) {
     Object.assign(Logger, logger);
   }

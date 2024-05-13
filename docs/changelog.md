@@ -7,6 +7,12 @@
 
 ### CHANGELOG
 
+#### V5.9.8
+
+> 2024-05-13
+>
+> - Fixing logger bug when calling Provider.setup() without a logger object.
+
 #### V5.9.7
 
 > 2024-05-01
