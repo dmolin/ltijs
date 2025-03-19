@@ -676,7 +676,7 @@ class Provider {
         if (!conf.silent) {
           console.log("Ltijs started in serverless mode...");
           if (!conf.silent) {
-            const message = `LOCAL LTI Provider will handle requests on the current server endpoints` + `\n >App Route: ${_classPrivateFieldGet(_path, this)}${_classPrivateFieldGet(_appRoute, this)}` + `\n >Initiate Login Route: ${_classPrivateFieldGet(_path, this)}${_classPrivateFieldGet(_loginRoute, this)}` + `\n >Keyset Route: ${_classPrivateFieldGet(_path, this)}${_classPrivateFieldGet(_keysetRoute, this)}` + `\n >Dynamic Registration Route: ${_classPrivateFieldGet(_path, this)}${_classPrivateFieldGet(_dynRegRoute, this)}`;
+            const message = `LTI Provider will handle requests on the current server endpoints` + `\n >App Route: ${_classPrivateFieldGet(_path, this)}${_classPrivateFieldGet(_appRoute, this)}` + `\n >Initiate Login Route: ${_classPrivateFieldGet(_path, this)}${_classPrivateFieldGet(_loginRoute, this)}` + `\n >Keyset Route: ${_classPrivateFieldGet(_path, this)}${_classPrivateFieldGet(_keysetRoute, this)}` + `\n >Dynamic Registration Route: ${_classPrivateFieldGet(_path, this)}${_classPrivateFieldGet(_dynRegRoute, this)}`;
             console.log("  _   _______ _____      _  _____\n" + " | | |__   __|_   _|    | |/ ____|\n" + " | |    | |    | |      | | (___  \n" + " | |    | |    | |  _   | |\\___ \\ \n" + " | |____| |   _| |_| |__| |____) |\n" + " |______|_|  |_____|\\____/|_____/ \n\n", message);
           }
         }
@@ -685,7 +685,7 @@ class Provider {
         provMainDebug("Ltijs started listening on port: ", conf.port);
 
         // Startup message
-        const message = "LOCAL LTI Provider is listening on port " + conf.port + "!\n\n LTI provider config: \n >App Route: " + _classPrivateFieldGet(_appRoute, this) + "\n >Initiate Login Route: " + _classPrivateFieldGet(_loginRoute, this) + "\n >Keyset Route: " + _classPrivateFieldGet(_keysetRoute, this) + "\n >Dynamic Registration Route: " + _classPrivateFieldGet(_dynRegRoute, this);
+        const message = "LTI Provider is listening on port " + conf.port + "!\n\n LTI provider config: \n >App Route: " + _classPrivateFieldGet(_appRoute, this) + "\n >Initiate Login Route: " + _classPrivateFieldGet(_loginRoute, this) + "\n >Keyset Route: " + _classPrivateFieldGet(_keysetRoute, this) + "\n >Dynamic Registration Route: " + _classPrivateFieldGet(_dynRegRoute, this);
         if (!conf.silent) {
           console.log("  _   _______ _____      _  _____\n" + " | | |__   __|_   _|    | |/ ____|\n" + " | |    | |    | |      | | (___  \n" + " | |    | |    | |  _   | |\\___ \\ \n" + " | |____| |   _| |_| |__| |____) |\n" + " |______|_|  |_____|\\____/|_____/ \n\n", message);
         }
