@@ -9,10 +9,7 @@ function _assertClassBrand(e, t, n) { if ("function" == typeof e ? e === t : e.h
 
 const got = require("got");
 const parseLink = require("parse-link-header");
-// const provNamesAndRolesServiceDebug = require("debug")(
-//   "provider:namesAndRolesService",
-// );
-const provNamesAndRolesServiceDebug = console.log;
+const provNamesAndRolesServiceDebug = require("debug")("provider:namesAndRolesService");
 var _getPlatform = /*#__PURE__*/new WeakMap();
 var _ENCRYPTIONKEY = /*#__PURE__*/new WeakMap();
 var _Database = /*#__PURE__*/new WeakMap();

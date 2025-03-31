@@ -271,6 +271,7 @@ class Provider {
     // Registers main athentication and routing middleware
     const sessionValidator = async (req, res, next) => {
       provMainDebug("Receiving request at path: " + req.baseUrl + req.path);
+      provMainDebug("Request query: " + JSON.stringify(req.query));
       // Ckeck if request is attempting to initiate oidc login flow or access reserved routes
       if (req.path === _classPrivateFieldGet(_loginRoute, this) || req.path === _classPrivateFieldGet(_keysetRoute, this) || req.path === _classPrivateFieldGet(_dynRegRoute, this)) return next();
       provMainDebug(`Path does not match reserved endpoints [${_classPrivateFieldGet(_loginRoute, this)}, ${_classPrivateFieldGet(_keysetRoute, this)}, ${_classPrivateFieldGet(_dynRegRoute, this)}]`);
@@ -599,6 +600,7 @@ class Provider {
           // Setting up validation info
           const cookieOptions = JSON.parse(JSON.stringify(_classPrivateFieldGet(_cookieOptions, this)));
           cookieOptions.maxAge = 60 * 1000; // Adding max age to state cookie = 1min
+          provMainDebug("Cookie Options", cookieOptions);
           res.cookie("state" + state, iss, cookieOptions);
 
           // Redirect to authentication endpoint

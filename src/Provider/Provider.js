@@ -304,6 +304,7 @@ class Provider {
     // Registers main athentication and routing middleware
     const sessionValidator = async (req, res, next) => {
       provMainDebug("Receiving request at path: " + req.baseUrl + req.path);
+      provMainDebug("Request query: " + JSON.stringify(req.query));
       // Ckeck if request is attempting to initiate oidc login flow or access reserved routes
       if (
         req.path === this.#loginRoute ||
@@ -770,6 +771,7 @@ class Provider {
           // Setting up validation info
           const cookieOptions = JSON.parse(JSON.stringify(this.#cookieOptions));
           cookieOptions.maxAge = 60 * 1000; // Adding max age to state cookie = 1min
+          provMainDebug("Cookie Options", cookieOptions);
           res.cookie("state" + state, iss, cookieOptions);
 
           // Redirect to authentication endpoint
