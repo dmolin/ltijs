@@ -49,9 +49,9 @@ class Server {
           credentials: true,
         }),
       );
-      this.app.options("*", cors());
     }
-    this.app.use(express.query());
+    this.app.use(cors());
+    // this.app.set("query parser", "extended");
     this.app.use(bodyParser.urlencoded({ extended: false }));
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.raw());

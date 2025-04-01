@@ -88,8 +88,6 @@ class NamesAndRoles {
       let response;
       provNamesAndRolesServiceDebug("Member pages found: ", curPage);
       provNamesAndRolesServiceDebug("Current member page: ", next);
-      console.log("====> query params", query);
-      console.log("====> url", next);
       if (query && curPage === 1) response = await got.get(next, {
         searchParams: query,
         headers: {
