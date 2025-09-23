@@ -916,9 +916,9 @@ class Provider {
         const plat = new Platform(platform.name, platform.url, platform.clientId, platform.authenticationEndpoint, platform.accesstokenEndpoint, platform.authorizationServer, kid, _ENCRYPTIONKEY, platform.authConfig, this.Database, log === null || log === void 0 ? void 0 : log.info);
 
         // Save platform to db
-        provMainDebug("Registering new platform");
-        provMainDebug("Platform Url: " + platform.url);
-        provMainDebug("Platform ClientId: " + platform.clientId);
+        log === null || log === void 0 || log.info("Registering new platform");
+        log === null || log === void 0 || log.info("Platform Url: " + platform.url);
+        log === null || log === void 0 || log.info("Platform ClientId: " + platform.clientId);
         await _Database.Replace(false, "platform", {
           platformUrl: platform.url,
           clientId: platform.clientId
@@ -980,7 +980,7 @@ class Provider {
       });
       if (!result) return false;
       const plat = result[0];
-      const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, _ENCRYPTIONKEY, plat.authConfig, _Database);
+      const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, _ENCRYPTIONKEY, plat.authConfig, _Database, log === null || log === void 0 ? void 0 : log.info);
       return platform;
     }
     const result = await _Database.Get(false, "platform", {
@@ -989,7 +989,7 @@ class Provider {
     if (!result) return false;
     const platforms = [];
     for (const plat of result) {
-      const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, _ENCRYPTIONKEY, plat.authConfig, _Database);
+      const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, _ENCRYPTIONKEY, plat.authConfig, _Database, log === null || log === void 0 ? void 0 : log.info);
       platforms.push(platform);
     }
     return platforms;
@@ -1007,7 +1007,7 @@ class Provider {
     });
     if (!result) return false;
     const plat = result[0];
-    const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, _classPrivateFieldGet(_ENCRYPTIONKEY2, this), plat.authConfig, this.Database);
+    const platform = new Platform(plat.platformName, plat.platformUrl, plat.clientId, plat.authEndpoint, plat.accesstokenEndpoint, plat.authorizationServer, plat.kid, _classPrivateFieldGet(_ENCRYPTIONKEY2, this), plat.authConfig, this.Database, log === null || log === void 0 ? void 0 : log.info);
     return platform;
   }
 
@@ -1086,7 +1086,7 @@ class Provider {
         authorizationServer: update.authorizationServer,
         authConfig: update.authConfig
       });
-      const platform = new Platform(update.name, update.url, update.clientId, update.authenticationEndpoint, update.accesstokenEndpoint, update.authorizationServer, platformId, _classPrivateFieldGet(_ENCRYPTIONKEY2, this), update.authConfig, this.Database);
+      const platform = new Platform(update.name, update.url, update.clientId, update.authenticationEndpoint, update.accesstokenEndpoint, update.authorizationServer, platformId, _classPrivateFieldGet(_ENCRYPTIONKEY2, this), update.authConfig, this.Database, log === null || log === void 0 ? void 0 : log.info);
       return platform;
     } catch (err) {
       if (alteredUrlClientIdFlag) {
