@@ -24,6 +24,7 @@ var _accesstokenEndpoint = /*#__PURE__*/new WeakMap();
 var _authorizationServer = /*#__PURE__*/new WeakMap();
 var _kid = /*#__PURE__*/new WeakMap();
 var _Database = /*#__PURE__*/new WeakMap();
+var _logger = /*#__PURE__*/new WeakMap();
 class Platform {
   /**
    * @param {string} name - Platform name.
@@ -36,7 +37,7 @@ class Platform {
    * @param {string} _ENCRYPTIONKEY - Encryption key used
    * @param {Object} _authConfig - Authentication configurations for the platform.
    */
-  constructor(name, platformUrl, clientId, authenticationEndpoint, accesstokenEndpoint, authorizationServer, kid, _ENCRYPTIONKEY, _authConfig, Database) {
+  constructor(name, platformUrl, clientId, authenticationEndpoint, accesstokenEndpoint, authorizationServer, kid, _ENCRYPTIONKEY, _authConfig, Database, logger) {
     _classPrivateFieldInitSpec(this, _platformName, void 0);
     _classPrivateFieldInitSpec(this, _platformUrl, void 0);
     _classPrivateFieldInitSpec(this, _clientId, void 0);
@@ -47,6 +48,7 @@ class Platform {
     _classPrivateFieldInitSpec(this, _authorizationServer, void 0);
     _classPrivateFieldInitSpec(this, _kid, void 0);
     _classPrivateFieldInitSpec(this, _Database, void 0);
+    _classPrivateFieldInitSpec(this, _logger, void 0);
     _classPrivateFieldSet(_authConfig2, this, _authConfig);
     _classPrivateFieldSet(_ENCRYPTIONKEY2, this, _ENCRYPTIONKEY);
     _classPrivateFieldSet(_platformName, this, name);
@@ -57,6 +59,7 @@ class Platform {
     _classPrivateFieldSet(_authorizationServer, this, authorizationServer);
     _classPrivateFieldSet(_kid, this, kid);
     _classPrivateFieldSet(_Database, this, Database);
+    _classPrivateFieldSet(_logger, this, logger !== null && logger !== void 0 ? logger : provPlatformDebug);
   }
 
   /**
@@ -237,12 +240,12 @@ class Platform {
     });
     let token;
     if (!result || (Date.now() - result[0].createdAt) / 1000 > result[0].token.expires_in) {
-      provPlatformDebug("Valid access_token for " + _classPrivateFieldGet(_platformUrl, this) + " not found");
-      provPlatformDebug("Attempting to generate new access_token for " + _classPrivateFieldGet(_platformUrl, this));
-      provPlatformDebug("With scopes: " + scopes);
-      token = await Auth.getAccessToken(scopes, this, _classPrivateFieldGet(_ENCRYPTIONKEY2, this), _classPrivateFieldGet(_Database, this));
+      _classPrivateFieldGet(_logger, this).call(this, "Valid access_token for " + _classPrivateFieldGet(_platformUrl, this) + " not found");
+      _classPrivateFieldGet(_logger, this).call(this, "Attempting to generate new access_token for " + _classPrivateFieldGet(_platformUrl, this));
+      _classPrivateFieldGet(_logger, this).call(this, "With scopes: " + scopes);
+      token = await Auth.getAccessToken(scopes, this, _classPrivateFieldGet(_ENCRYPTIONKEY2, this), _classPrivateFieldGet(_Database, this), _classPrivateFieldGet(_logger, this));
     } else {
-      provPlatformDebug("Access_token found");
+      _classPrivateFieldGet(_logger, this).call(this, "Access_token found");
       token = result[0].token;
     }
     token.token_type = token.token_type.charAt(0).toUpperCase() + token.token_type.slice(1);

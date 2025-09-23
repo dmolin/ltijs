@@ -13,14 +13,17 @@ const provNamesAndRolesServiceDebug = require("debug")("provider:namesAndRolesSe
 var _getPlatform = /*#__PURE__*/new WeakMap();
 var _ENCRYPTIONKEY = /*#__PURE__*/new WeakMap();
 var _Database = /*#__PURE__*/new WeakMap();
+var _logger = /*#__PURE__*/new WeakMap();
 class NamesAndRoles {
-  constructor(getPlatform, ENCRYPTIONKEY, Database) {
+  constructor(getPlatform, ENCRYPTIONKEY, Database, Logger) {
     _classPrivateFieldInitSpec(this, _getPlatform, null);
     _classPrivateFieldInitSpec(this, _ENCRYPTIONKEY, "");
     _classPrivateFieldInitSpec(this, _Database, void 0);
+    _classPrivateFieldInitSpec(this, _logger, void 0);
     _classPrivateFieldSet(_getPlatform, this, getPlatform);
     _classPrivateFieldSet(_ENCRYPTIONKEY, this, ENCRYPTIONKEY);
     _classPrivateFieldSet(_Database, this, Database);
+    _classPrivateFieldSet(_logger, this, Logger !== null && Logger !== void 0 ? Logger : provNamesAndRolesServiceDebug);
   }
 
   /**
@@ -38,16 +41,16 @@ class NamesAndRoles {
       provNamesAndRolesServiceDebug("Missing IdToken object.");
       throw new Error("MISSING_ID_TOKEN");
     }
-    provNamesAndRolesServiceDebug("Attempting to retrieve memberships");
-    provNamesAndRolesServiceDebug("Target platform: " + idtoken.iss);
+    _classPrivateFieldGet(_logger, this).call(this, "Attempting to retrieve memberships");
+    _classPrivateFieldGet(_logger, this).call(this, "Target platform: " + idtoken.iss);
     const platform = await _classPrivateFieldGet(_getPlatform, this).call(this, idtoken.iss, idtoken.clientId, _classPrivateFieldGet(_ENCRYPTIONKEY, this), _classPrivateFieldGet(_Database, this));
     if (!platform) {
-      provNamesAndRolesServiceDebug("Platform not found");
+      _classPrivateFieldGet(_logger, this).call(this, "Platform not found");
       throw new Error("PLATFORM_NOT_FOUND");
     }
     const platformActive = await platform.platformActive();
     if (!platformActive) throw new Error("PLATFORM_NOT_ACTIVATED");
-    provNamesAndRolesServiceDebug("Attempting to retrieve platform access_token for [" + idtoken.iss + "]");
+    _classPrivateFieldGet(_logger, this).call(this, "Attempting to retrieve platform access_token for [" + idtoken.iss + "]");
     const tokenRes = await platform.platformAccessToken("https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly");
     provNamesAndRolesServiceDebug("Access_token retrieved for [" + idtoken.iss + "]");
     let pages = 1; // Page limit

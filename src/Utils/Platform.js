@@ -28,6 +28,8 @@ class Platform {
 
   #Database;
 
+  #logger;
+
   /**
    * @param {string} name - Platform name.
    * @param {string} platformUrl - Platform url.
@@ -50,6 +52,7 @@ class Platform {
     _ENCRYPTIONKEY,
     _authConfig,
     Database,
+    logger,
   ) {
     this.#authConfig = _authConfig;
     this.#ENCRYPTIONKEY = _ENCRYPTIONKEY;
@@ -61,6 +64,7 @@ class Platform {
     this.#authorizationServer = authorizationServer;
     this.#kid = kid;
     this.#Database = Database;
+    this.#logger = logger ?? provPlatformDebug;
   }
 
   /**
@@ -260,21 +264,22 @@ class Platform {
       !result ||
       (Date.now() - result[0].createdAt) / 1000 > result[0].token.expires_in
     ) {
-      provPlatformDebug(
+      this.#logger(
         "Valid access_token for " + this.#platformUrl + " not found",
       );
-      provPlatformDebug(
+      this.#logger(
         "Attempting to generate new access_token for " + this.#platformUrl,
       );
-      provPlatformDebug("With scopes: " + scopes);
+      this.#logger("With scopes: " + scopes);
       token = await Auth.getAccessToken(
         scopes,
         this,
         this.#ENCRYPTIONKEY,
         this.#Database,
+        this.#logger,
       );
     } else {
-      provPlatformDebug("Access_token found");
+      this.#logger("Access_token found");
       token = result[0].token;
     }
     token.token_type =

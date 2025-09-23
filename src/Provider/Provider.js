@@ -277,6 +277,7 @@ class Provider {
       this.getPlatform,
       this.#ENCRYPTIONKEY,
       this.Database,
+      log?.info,
     );
 
     if (options && options.dynReg) {
@@ -1193,6 +1194,7 @@ class Provider {
           _ENCRYPTIONKEY,
           platform.authConfig,
           this.Database,
+          log?.info,
         );
 
         // Save platform to db

@@ -295,7 +295,7 @@ class Auth {
      * @param {String} scopes - Request scopes
      * @param {Platform} platform - Platform object of the platform you want to access.
      */
-  static async getAccessToken(scopes, platform, ENCRYPTIONKEY, Database) {
+  static async getAccessToken(scopes, platform, ENCRYPTIONKEY, Database, logger) {
     const platformUrl = await platform.platformUrl();
     const clientId = await platform.platformClientId();
     const confjwt = {
@@ -315,11 +315,11 @@ class Auth {
       client_assertion: token,
       scope: scopes
     };
-    provAuthDebug('Awaiting return from the platform');
+    logger('Awaiting return from the platform at endpoint: ', await platform.platformAccessTokenEndpoint());
     const access = await got.post(await platform.platformAccessTokenEndpoint(), {
       form: message
     }).json();
-    provAuthDebug('Successfully generated new access_token');
+    logger('Successfully generated new access_token');
     await Database.Replace(ENCRYPTIONKEY, 'accesstoken', {
       platformUrl: platformUrl,
       clientId: clientId,

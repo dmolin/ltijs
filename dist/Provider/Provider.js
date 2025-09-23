@@ -254,7 +254,7 @@ class Provider {
     /**
      * @description Names and Roles service.
      */
-    this.NamesAndRoles = new NamesAndRolesService(this.getPlatform, _classPrivateFieldGet(_ENCRYPTIONKEY2, this), this.Database);
+    this.NamesAndRoles = new NamesAndRolesService(this.getPlatform, _classPrivateFieldGet(_ENCRYPTIONKEY2, this), this.Database, log === null || log === void 0 ? void 0 : log.info);
     if (options && options.dynReg) {
       const routes = {
         appRoute: _classPrivateFieldGet(_appRoute, this),
@@ -913,7 +913,7 @@ class Provider {
       if (!platform.authConfig.key) throw new Error("MISSING_AUTHCONFIG_KEY");
       try {
         kid = await Auth.generatePlatformKeyPair(_ENCRYPTIONKEY, _Database, platform.url, platform.clientId);
-        const plat = new Platform(platform.name, platform.url, platform.clientId, platform.authenticationEndpoint, platform.accesstokenEndpoint, platform.authorizationServer, kid, _ENCRYPTIONKEY, platform.authConfig, this.Database);
+        const plat = new Platform(platform.name, platform.url, platform.clientId, platform.authenticationEndpoint, platform.accesstokenEndpoint, platform.authorizationServer, kid, _ENCRYPTIONKEY, platform.authConfig, this.Database, log === null || log === void 0 ? void 0 : log.info);
 
         // Save platform to db
         provMainDebug("Registering new platform");

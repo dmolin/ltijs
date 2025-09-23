@@ -13,10 +13,13 @@ class NamesAndRoles {
 
   #Database;
 
-  constructor(getPlatform, ENCRYPTIONKEY, Database) {
+  #logger;
+
+  constructor(getPlatform, ENCRYPTIONKEY, Database, Logger) {
     this.#getPlatform = getPlatform;
     this.#ENCRYPTIONKEY = ENCRYPTIONKEY;
     this.#Database = Database;
+    this.#logger = Logger ?? provNamesAndRolesServiceDebug;
   }
 
   /**
@@ -34,8 +37,8 @@ class NamesAndRoles {
       provNamesAndRolesServiceDebug("Missing IdToken object.");
       throw new Error("MISSING_ID_TOKEN");
     }
-    provNamesAndRolesServiceDebug("Attempting to retrieve memberships");
-    provNamesAndRolesServiceDebug("Target platform: " + idtoken.iss);
+    this.#logger("Attempting to retrieve memberships");
+    this.#logger("Target platform: " + idtoken.iss);
 
     const platform = await this.#getPlatform(
       idtoken.iss,
@@ -45,13 +48,13 @@ class NamesAndRoles {
     );
 
     if (!platform) {
-      provNamesAndRolesServiceDebug("Platform not found");
+      this.#logger("Platform not found");
       throw new Error("PLATFORM_NOT_FOUND");
     }
     const platformActive = await platform.platformActive();
     if (!platformActive) throw new Error("PLATFORM_NOT_ACTIVATED");
 
-    provNamesAndRolesServiceDebug(
+    this.#logger(
       "Attempting to retrieve platform access_token for [" + idtoken.iss + "]",
     );
     const tokenRes = await platform.platformAccessToken(
