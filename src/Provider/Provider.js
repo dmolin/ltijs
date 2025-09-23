@@ -1198,9 +1198,9 @@ class Provider {
         );
 
         // Save platform to db
-        provMainDebug("Registering new platform");
-        provMainDebug("Platform Url: " + platform.url);
-        provMainDebug("Platform ClientId: " + platform.clientId);
+        log?.info("Registering new platform");
+        log?.info("Platform Url: " + platform.url);
+        log?.info("Platform ClientId: " + platform.clientId);
         await _Database.Replace(
           false,
           "platform",
@@ -1288,6 +1288,7 @@ class Provider {
         _ENCRYPTIONKEY,
         plat.authConfig,
         _Database,
+        log?.info,
       );
       return platform;
     }
@@ -1308,6 +1309,7 @@ class Provider {
         _ENCRYPTIONKEY,
         plat.authConfig,
         _Database,
+        log?.info,
       );
       platforms.push(platform);
     }
@@ -1339,6 +1341,7 @@ class Provider {
       this.#ENCRYPTIONKEY,
       plat.authConfig,
       this.Database,
+      log?.info,
     );
     return platform;
   }
@@ -1452,6 +1455,7 @@ class Provider {
         this.#ENCRYPTIONKEY,
         update.authConfig,
         this.Database,
+        log?.info,
       );
       return platform;
     } catch (err) {
