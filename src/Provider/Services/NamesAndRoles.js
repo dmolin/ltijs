@@ -76,6 +76,9 @@ class NamesAndRoles {
         pages = options.pages;
       }
       if (options.url) {
+        this.#logger(
+          "Retrieving memberships from specific URL: " + options.url,
+        );
         next = options.url;
         query = false;
       } else {
@@ -117,7 +120,10 @@ class NamesAndRoles {
       provNamesAndRolesServiceDebug("Member pages found: ", curPage);
       provNamesAndRolesServiceDebug("Current member page: ", next);
 
-      if (query && curPage === 1)
+      if (query && curPage === 1) {
+        this.#logger(
+          "Retrieving memberships with query (first page): " + query,
+        );
         response = await got.get(next, {
           searchParams: query,
           headers: {
@@ -125,13 +131,15 @@ class NamesAndRoles {
             Accept: "application/vnd.ims.lti-nrps.v2.membershipcontainer+json",
           },
         });
-      else
+      } else {
+        this.#logger("Retrieving memberships with query: " + query);
         response = await got.get(next, {
           headers: {
             Authorization: tokenRes.token_type + " " + tokenRes.access_token,
             Accept: "application/vnd.ims.lti-nrps.v2.membershipcontainer+json",
           },
         });
+      }
 
       const headers = response.headers;
       const body = JSON.parse(response.body);
