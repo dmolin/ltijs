@@ -62,6 +62,7 @@ class NamesAndRoles {
         pages = options.pages;
       }
       if (options.url) {
+        _classPrivateFieldGet(_logger, this).call(this, "Retrieving memberships from specific URL: " + options.url);
         next = options.url;
         query = false;
       } else {
@@ -91,18 +92,24 @@ class NamesAndRoles {
       let response;
       provNamesAndRolesServiceDebug("Member pages found: ", curPage);
       provNamesAndRolesServiceDebug("Current member page: ", next);
-      if (query && curPage === 1) response = await got.get(next, {
-        searchParams: query,
-        headers: {
-          Authorization: tokenRes.token_type + " " + tokenRes.access_token,
-          Accept: "application/vnd.ims.lti-nrps.v2.membershipcontainer+json"
-        }
-      });else response = await got.get(next, {
-        headers: {
-          Authorization: tokenRes.token_type + " " + tokenRes.access_token,
-          Accept: "application/vnd.ims.lti-nrps.v2.membershipcontainer+json"
-        }
-      });
+      if (query && curPage === 1) {
+        _classPrivateFieldGet(_logger, this).call(this, "Retrieving memberships with query (first page): " + query);
+        response = await got.get(next, {
+          searchParams: query,
+          headers: {
+            Authorization: tokenRes.token_type + " " + tokenRes.access_token,
+            Accept: "application/vnd.ims.lti-nrps.v2.membershipcontainer+json"
+          }
+        });
+      } else {
+        _classPrivateFieldGet(_logger, this).call(this, "Retrieving memberships with query: " + query);
+        response = await got.get(next, {
+          headers: {
+            Authorization: tokenRes.token_type + " " + tokenRes.access_token,
+            Accept: "application/vnd.ims.lti-nrps.v2.membershipcontainer+json"
+          }
+        });
+      }
       const headers = response.headers;
       const body = JSON.parse(response.body);
       if (!result) result = JSON.parse(JSON.stringify(body));else {
