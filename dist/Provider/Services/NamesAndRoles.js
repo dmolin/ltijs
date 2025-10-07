@@ -91,9 +91,8 @@ class NamesAndRoles {
       }
       let response;
       provNamesAndRolesServiceDebug("Member pages found: ", curPage);
-      provNamesAndRolesServiceDebug("Current member page: ", next);
+      _classPrivateFieldGet(_logger, this).call(this, "Current member page: ", next);
       if (query && curPage === 1) {
-        _classPrivateFieldGet(_logger, this).call(this, "Retrieving memberships with query (first page): " + query);
         response = await got.get(next, {
           searchParams: query,
           headers: {
@@ -102,7 +101,6 @@ class NamesAndRoles {
           }
         });
       } else {
-        _classPrivateFieldGet(_logger, this).call(this, "Retrieving memberships with query: " + query);
         response = await got.get(next, {
           headers: {
             Authorization: tokenRes.token_type + " " + tokenRes.access_token,

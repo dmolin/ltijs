@@ -118,12 +118,9 @@ class NamesAndRoles {
       }
       let response;
       provNamesAndRolesServiceDebug("Member pages found: ", curPage);
-      provNamesAndRolesServiceDebug("Current member page: ", next);
+      this.#logger("Current member page: ", next);
 
       if (query && curPage === 1) {
-        this.#logger(
-          "Retrieving memberships with query (first page): " + query,
-        );
         response = await got.get(next, {
           searchParams: query,
           headers: {
@@ -132,7 +129,6 @@ class NamesAndRoles {
           },
         });
       } else {
-        this.#logger("Retrieving memberships with query: " + query);
         response = await got.get(next, {
           headers: {
             Authorization: tokenRes.token_type + " " + tokenRes.access_token,
