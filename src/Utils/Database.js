@@ -120,6 +120,8 @@ class Database {
     const stateSchema = new Schema({
       state: String,
       query: JSON,
+      iss: String,
+      clientId: String,
       createdAt: { type: Date, expires: 600, default: Date.now }
     })
     stateSchema.index({ state: 1 }, { unique: true })

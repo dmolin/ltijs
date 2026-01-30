@@ -4,8 +4,8 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { (0, _defineProperty2.default)(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
+function _classPrivateFieldInitSpec(e, t, a) { _checkPrivateRedeclaration(e, t), t.set(e, a); }
+function _checkPrivateRedeclaration(e, t) { if (t.has(e)) throw new TypeError("Cannot initialize the same private elements twice on an object"); }
 function _classPrivateFieldSet(s, a, r) { return s.set(_assertClassBrand(s, a), r), r; }
 function _classPrivateFieldGet(s, a) { return s.get(_assertClassBrand(s, a)); }
 function _assertClassBrand(e, t, n) { if ("function" == typeof e ? e === t : e.has(t)) return arguments.length < 3 ? t : n; throw new TypeError("Private element is not present on this object"); }
@@ -51,6 +51,7 @@ var _devMode = /*#__PURE__*/new WeakMap();
 var _ltiaas = /*#__PURE__*/new WeakMap();
 var _tokenMaxAge = /*#__PURE__*/new WeakMap();
 var _cookieOptions = /*#__PURE__*/new WeakMap();
+var _cookieFallback = /*#__PURE__*/new WeakMap();
 var _setup = /*#__PURE__*/new WeakMap();
 var _path = /*#__PURE__*/new WeakMap();
 var _connectCallback2 = /*#__PURE__*/new WeakMap();
@@ -79,6 +80,7 @@ class Provider {
       httpOnly: true,
       signed: true
     });
+    _classPrivateFieldInitSpec(this, _cookieFallback, true);
     // Setup flag
     _classPrivateFieldInitSpec(this, _setup, false);
     // if provided, the "base" path for the URLs managed by the LTIJS Express server
@@ -188,6 +190,7 @@ class Provider {
    * @param {Boolean} [options.cookies.secure = false] - Cookie secure parameter. If true, only allows cookies to be passed over https.
    * @param {String} [options.cookies.sameSite = 'Lax'] - Cookie sameSite parameter. If cookies are going to be set across domains, set this parameter to 'None'.
    * @param {String} [options.cookies.domain] - Cookie domain parameter. This parameter can be used to specify a domain so that the cookies set by Ltijs can be shared between subdomains.
+   * @param {Boolean} [options.cookies.fallback = true] - If true, Ltijs will fall back to DB-backed state validation when state cookies are blocked and will allow ltik validation without a session cookie.
    * @param {Boolean} [options.devMode = false] - If true, does not require state and session cookies to be present (If present, they are still validated). This allows ltijs to work on development environments where cookies cannot be set. THIS SHOULD NOT BE USED IN A PRODUCTION ENVIRONMENT.
    * @param {Number} [options.tokenMaxAge = 10] - Sets the idToken max age allowed in seconds. Defaults to 10 seconds. If false, disables max age validation.
    * @param {Object} [options.dynReg] - Setup for the Dynamic Registration Service.
@@ -232,6 +235,7 @@ class Provider {
       if (options.cookies.secure === true) _classPrivateFieldGet(_cookieOptions, this).secure = true;
       if (options.cookies.sameSite) _classPrivateFieldGet(_cookieOptions, this).sameSite = options.cookies.sameSite;
       if (options.cookies.domain) _classPrivateFieldGet(_cookieOptions, this).domain = options.cookies.domain;
+      if (options.cookies.fallback === false) _classPrivateFieldSet(_cookieFallback, this, false);
     }
     _classPrivateFieldSet(_ENCRYPTIONKEY2, this, encryptionkey);
     _classPrivateFieldSet(_server, this, new Server(options ? options.https : false, options ? options.ssl : false, _classPrivateFieldGet(_ENCRYPTIONKEY2, this), options ? options.cors : true, options ? options.serverAddon : false));
@@ -294,16 +298,26 @@ class Provider {
             // Retrieving validation parameters from cookies
             provAuthDebug("Response state: " + state);
             const validationCookie = cookies["state" + state];
+            let savedState = null;
+            if (!validationCookie && _classPrivateFieldGet(_cookieFallback, this)) {
+              const stateRes = await this.Database.Get(false, "state", {
+                state: state
+              });
+              if (stateRes) savedState = stateRes[0];
+            }
             const validationParameters = {
-              iss: validationCookie,
+              iss: validationCookie || savedState && savedState.iss,
               maxAge: _classPrivateFieldGet(_tokenMaxAge, this)
             };
             const valid = await Auth.validateToken(idtoken, _classPrivateFieldGet(_devMode, this), validationParameters, this.getPlatform, _classPrivateFieldGet(_ENCRYPTIONKEY2, this), this.Database);
 
             // Retrieve State object from Database
-            const savedState = await this.Database.Get(false, "state", {
-              state: state
-            });
+            if (!savedState) {
+              const stateRes = await this.Database.Get(false, "state", {
+                state: state
+              });
+              if (stateRes) savedState = stateRes[0];
+            }
 
             // Deletes state validation cookie and Database entry
             res.clearCookie("state" + state, _classPrivateFieldGet(_cookieOptions, this));
@@ -390,11 +404,10 @@ class Provider {
             if (_classPrivateFieldGet(_ltiaas, this)) {
               // Appending query parameters
               res.locals.query = {};
-              if (savedState) {
-                for (const [key, value] of Object.entries(savedState[0].query)) {
-                  req.query[key] = value;
-                  res.locals.query[key] = value;
-                }
+              const savedQuery = savedState && savedState.query ? savedState.query : {};
+              for (const [key, value] of Object.entries(savedQuery)) {
+                req.query[key] = value;
+                res.locals.query[key] = value;
               }
 
               // Creating local variables
@@ -408,10 +421,9 @@ class Provider {
 
             // Appending query parameters
             const query = new URLSearchParams(req.query);
-            if (savedState) {
-              for (const [key, value] of Object.entries(savedState[0].query)) {
-                query.append(key, value);
-              }
+            const savedQuery = savedState && savedState.query ? savedState.query : {};
+            for (const [key, value] of Object.entries(savedQuery)) {
+              query.append(key, value);
             }
             query.append("ltik", newLtik);
             const urlSearchParams = query.toString();
@@ -478,7 +490,9 @@ class Provider {
           provMainDebug("Attempting to retrieve matching session cookie");
           const cookieUser = cookies[platformCode];
           if (!cookieUser) {
-            if (!_classPrivateFieldGet(_devMode, this)) user = false;else {
+            if (_classPrivateFieldGet(_cookieFallback, this)) {
+              provMainDebug("Cookie fallback enabled: Missing session cookies will be ignored");
+            } else if (!_classPrivateFieldGet(_devMode, this)) user = false;else {
               provMainDebug("Dev Mode enabled: Missing session cookies will be ignored");
             }
           } else if (user.toString() !== cookieUser.toString()) user = false;
@@ -574,26 +588,34 @@ class Provider {
           log.info("Provider: Target Link URI: ", params.target_link_uri);
           /* istanbul ignore next */
           // Cleaning up target link uri and retrieving query parameters
+          let storeState = false;
+          const queries = {};
           if (params.target_link_uri.includes("?")) {
             // Retrieve raw queries
             const rawQueries = new URLSearchParams("?" + params.target_link_uri.split("?")[1]);
-            // Check if state is unique
-            while (await this.Database.Get(false, "state", {
-              state: state
-            })) state = encodeURIComponent(crypto.randomBytes(25).toString("hex"));
-            provMainDebug("Generated state: ", state);
             // Assemble queries object
-            const queries = {};
             for (const [key, value] of rawQueries) {
               queries[key] = value;
             }
             params.target_link_uri = params.target_link_uri.split("?")[0];
             provMainDebug("Query parameters found: ", queries);
             provMainDebug("Final Redirect URI: ", params.target_link_uri);
+            storeState = true;
+          }
+          if (_classPrivateFieldGet(_cookieFallback, this)) storeState = true;
+          if (storeState) {
+            // Check if state is unique
+            while (await this.Database.Get(false, "state", {
+              state: state
+            })) state = encodeURIComponent(crypto.randomBytes(25).toString("hex"));
+            provMainDebug("Generated state: ", state);
+
             // Store state and query parameters on database
             await this.Database.Insert(false, "state", {
               state: state,
-              query: queries
+              query: queries,
+              iss: iss,
+              clientId: clientId || (await platform.platformClientId())
             });
           }
 

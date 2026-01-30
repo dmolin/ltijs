@@ -7,6 +7,11 @@
 
 ### CHANGELOG
 
+#### Unreleased
+
+> - Added DB-backed state validation and ltik-only session fallback when cookies are blocked.
+> - Added `cookies.fallback` option (default: true).
+
 #### V5.9.8
 
 > 2024-05-13
