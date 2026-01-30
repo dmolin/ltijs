@@ -404,11 +404,10 @@ class Provider {
             if (_classPrivateFieldGet(_ltiaas, this)) {
               // Appending query parameters
               res.locals.query = {};
-              if (savedState) {
-                for (const [key, value] of Object.entries(savedState.query)) {
-                  req.query[key] = value;
-                  res.locals.query[key] = value;
-                }
+              const savedQuery = savedState && savedState.query ? savedState.query : {};
+              for (const [key, value] of Object.entries(savedQuery)) {
+                req.query[key] = value;
+                res.locals.query[key] = value;
               }
 
               // Creating local variables
@@ -422,10 +421,9 @@ class Provider {
 
             // Appending query parameters
             const query = new URLSearchParams(req.query);
-            if (savedState) {
-              for (const [key, value] of Object.entries(savedState.query)) {
-                query.append(key, value);
-              }
+            const savedQuery = savedState && savedState.query ? savedState.query : {};
+            for (const [key, value] of Object.entries(savedQuery)) {
+              query.append(key, value);
             }
             query.append("ltik", newLtik);
             const urlSearchParams = query.toString();
