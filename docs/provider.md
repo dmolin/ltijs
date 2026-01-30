@@ -288,9 +288,11 @@ Method used to setup and configure the LTI® provider.
 | options.staticPath | `String`  | The path for the static files your application might serve (Ex: _dirname+"/public") | *Optional* |
 | options.cors | `Boolean`  | If set to false, disables cors. **Default: true**. | *Optional* |
 | options.serverAddon | `Function` |  Allows the execution of a method inside of the server contructor. Can be used to register middlewares. | *Optional* |
-| options.cookies | `Object` | Cookie configuration. Allows you to configure, sameSite and secure parameters. | *Optional* |
+| options.cookies | `Object` | Cookie configuration. Allows you to configure sameSite and secure parameters. | *Optional* |
 | options.cookies.secure | `Boolean` | Cookie secure parameter. If true, only allows cookies to be passed over https. **Default: false**. | *Optional* |
 | options.cookies.sameSite | `String` | Cookie sameSite parameter. If cookies are going to be set across domains, set this parameter to 'None'. **Default: Lax**. | *Optional* |
+| options.cookies.domain | `String` | Cookie domain parameter. This parameter can be used to specify a domain so that the cookies set by Ltijs can be shared between subdomains. | *Optional* |
+| options.cookies.fallback | `Boolean` | If true, Ltijs will fall back to DB-backed `state` validation when the `state` cookie is missing, and will allow `ltik` validation without a session cookie. This improves compatibility with third-party cookie blocking. **Default: true**. | *Optional* |
 | options.tokenMaxAge | `String` | Sets the idToken max age allowed in seconds. If false, disables max age validation. **Default: 10**. | *Optional* |
 | options.devMode | `Boolean` | If true, does not require state and session cookies to be present (If present, they are still validated). This allows Ltijs to work on development environments where cookies cannot be set. **Default: false**. ***THIS SHOULD NOT BE USED IN A PRODUCTION ENVIRONMENT.*** | *Optional* |
 | options.ltiaas | `Boolean` | If set to true, disables the creation and validation of the session cookies. Login state cookies are still created, since they are a part of the LTI specification. **Default: false** | *Optional* |
@@ -856,6 +858,7 @@ Ltijs sets session cookies throughout the LTI® validation process, how these co
 - **sameSite** - Determines if the cookie can be sent cross domain. **Default: Lax**.
 
 - **domain** - Determines the cookie domain. This option can be used to set cookies that can be shared between all subdomains.
+- **fallback** - Enables DB-backed validation when `state` or session cookies are blocked (e.g., third-party cookie restrictions). When enabled, Ltijs stores `state` in the database and allows `ltik` validation without a session cookie. **Default: true**.
 
 ```javascript
 // Setup provider example
@@ -868,7 +871,8 @@ lti.setup('EXAMPLEKEY',
             cookies: { // Cookie configuration
               secure: true,
               sameSite: 'None',
-              domain: '.domain.com'
+              domain: '.domain.com',
+              fallback: true
             }
           })
 ```

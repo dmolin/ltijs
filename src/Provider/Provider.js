@@ -56,6 +56,7 @@ class Provider {
     httpOnly: true,
     signed: true,
   };
+  #cookieFallback = true;
 
   // Setup flag
   #setup = false;
@@ -171,6 +172,7 @@ class Provider {
    * @param {Boolean} [options.cookies.secure = false] - Cookie secure parameter. If true, only allows cookies to be passed over https.
    * @param {String} [options.cookies.sameSite = 'Lax'] - Cookie sameSite parameter. If cookies are going to be set across domains, set this parameter to 'None'.
    * @param {String} [options.cookies.domain] - Cookie domain parameter. This parameter can be used to specify a domain so that the cookies set by Ltijs can be shared between subdomains.
+   * @param {Boolean} [options.cookies.fallback = true] - If true, Ltijs will fall back to DB-backed state validation when state cookies are blocked and will allow ltik validation without a session cookie.
    * @param {Boolean} [options.devMode = false] - If true, does not require state and session cookies to be present (If present, they are still validated). This allows ltijs to work on development environments where cookies cannot be set. THIS SHOULD NOT BE USED IN A PRODUCTION ENVIRONMENT.
    * @param {Number} [options.tokenMaxAge = 10] - Sets the idToken max age allowed in seconds. Defaults to 10 seconds. If false, disables max age validation.
    * @param {Object} [options.dynReg] - Setup for the Dynamic Registration Service.
@@ -235,6 +237,7 @@ class Provider {
         this.#cookieOptions.sameSite = options.cookies.sameSite;
       if (options.cookies.domain)
         this.#cookieOptions.domain = options.cookies.domain;
+      if (options.cookies.fallback === false) this.#cookieFallback = false;
     }
 
     this.#ENCRYPTIONKEY = encryptionkey;
@@ -338,9 +341,16 @@ class Provider {
             // Retrieving validation parameters from cookies
             provAuthDebug("Response state: " + state);
             const validationCookie = cookies["state" + state];
+            let savedState = null;
+            if (!validationCookie && this.#cookieFallback) {
+              const stateRes = await this.Database.Get(false, "state", {
+                state: state,
+              });
+              if (stateRes) savedState = stateRes[0];
+            }
 
             const validationParameters = {
-              iss: validationCookie,
+              iss: validationCookie || (savedState && savedState.iss),
               maxAge: this.#tokenMaxAge,
             };
 
@@ -354,9 +364,12 @@ class Provider {
             );
 
             // Retrieve State object from Database
-            const savedState = await this.Database.Get(false, "state", {
-              state: state,
-            });
+            if (!savedState) {
+              const stateRes = await this.Database.Get(false, "state", {
+                state: state,
+              });
+              if (stateRes) savedState = stateRes[0];
+            }
 
             // Deletes state validation cookie and Database entry
             res.clearCookie("state" + state, this.#cookieOptions);
@@ -510,9 +523,7 @@ class Provider {
               // Appending query parameters
               res.locals.query = {};
               if (savedState) {
-                for (const [key, value] of Object.entries(
-                  savedState[0].query,
-                )) {
+                for (const [key, value] of Object.entries(savedState.query)) {
                   req.query[key] = value;
                   res.locals.query[key] = value;
                 }
@@ -530,7 +541,7 @@ class Provider {
             // Appending query parameters
             const query = new URLSearchParams(req.query);
             if (savedState) {
-              for (const [key, value] of Object.entries(savedState[0].query)) {
+              for (const [key, value] of Object.entries(savedState.query)) {
                 query.append(key, value);
               }
             }
@@ -630,7 +641,11 @@ class Provider {
           provMainDebug("Attempting to retrieve matching session cookie");
           const cookieUser = cookies[platformCode];
           if (!cookieUser) {
-            if (!this.#devMode) user = false;
+            if (this.#cookieFallback) {
+              provMainDebug(
+                "Cookie fallback enabled: Missing session cookies will be ignored",
+              );
+            } else if (!this.#devMode) user = false;
             else {
               provMainDebug(
                 "Dev Mode enabled: Missing session cookies will be ignored",
@@ -743,29 +758,39 @@ class Provider {
           log.info("Provider: Target Link URI: ", params.target_link_uri);
           /* istanbul ignore next */
           // Cleaning up target link uri and retrieving query parameters
+          let storeState = false;
+          const queries = {};
           if (params.target_link_uri.includes("?")) {
             // Retrieve raw queries
             const rawQueries = new URLSearchParams(
               "?" + params.target_link_uri.split("?")[1],
             );
-            // Check if state is unique
-            while (await this.Database.Get(false, "state", { state: state }))
-              state = encodeURIComponent(
-                crypto.randomBytes(25).toString("hex"),
-              );
-            provMainDebug("Generated state: ", state);
             // Assemble queries object
-            const queries = {};
             for (const [key, value] of rawQueries) {
               queries[key] = value;
             }
             params.target_link_uri = params.target_link_uri.split("?")[0];
             provMainDebug("Query parameters found: ", queries);
             provMainDebug("Final Redirect URI: ", params.target_link_uri);
+            storeState = true;
+          }
+
+          if (this.#cookieFallback) storeState = true;
+
+          if (storeState) {
+            // Check if state is unique
+            while (await this.Database.Get(false, "state", { state: state }))
+              state = encodeURIComponent(
+                crypto.randomBytes(25).toString("hex"),
+              );
+            provMainDebug("Generated state: ", state);
+
             // Store state and query parameters on database
             await this.Database.Insert(false, "state", {
               state: state,
               query: queries,
+              iss: iss,
+              clientId: clientId || (await platform.platformClientId()),
             });
           }
 
