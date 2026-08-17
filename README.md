@@ -1,7 +1,9 @@
 ## @hubroeducation/ltijs Fork
 
 This is a fork of the original LTIJS@5.8.9 from <a href="https://github.com/Cvmcosta/ltijs">Cvcosta</a>.
-The main difference is a patch that makes *serverless* mode properly work when your LTIJS Express server is mounted in a dedicated subpath of your existing Web application (like: "/ltitool"). This is currently not working in the main LTIJS repository
+The main difference is a patch that makes *serverless* mode properly work when your LTIJS Express server is mounted in a dedicated subpath of your existing Web application (like: "/ltitool"). This is currently not working in the main LTIJS repository. This fork also has been upgraded to work with the recent Express v5.
+
+**NOTE**: This repository is now read-only and will receive no further updates.
 
 This fork allows you to specify the path your LTIJS serverless installation is attached on, so the library will always be able to reference the correct complete URL in case of redirects.
 
